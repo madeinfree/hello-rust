@@ -5,11 +5,50 @@ use std::cmp::Ordering;
 use std::io;
 
 fn main() {
+  sample_ownership();
   // sample_control_flow();
   // sample_function_call();
   // sample_type();
   // sample_len();
   // sample_rang();
+}
+
+/* 會強制 copy 等於 clone
+ * All the integer types, such as u32.
+ * The Boolean type, bool, with values true and false.
+ * All the floating point types, such as f64.
+ * The character type, char.
+ * Tuples, but only if they contain types that are also Copy. For example,
+ * (i32, i32) is Copy, but (i32, String) is not.
+ *
+ * 當一個（除上述類型）變數被傳入一個方法中，就會移動至方法內
+ * 原本的則無法再使用。
+ * 強制 copy 類型不在此限制。
+ */
+fn sample_ownership() {
+  let s = String::from("Hello");
+  // let number = 5;
+  // println!("{}", s);
+  // let mut s2 = s;
+  // s2.push_str(", World");
+  // println!("{}", s2);
+
+  // takes_ownership(s);
+  // makes_copy(number);
+  // println!("{}", number);
+  // fn takes_ownership(some_string: String) {
+  //   println!("{}", some_string);
+  // }
+  // fn makes_copy(some_interger: i32) {
+  //   println!("{}", some_interger);
+  // }
+
+  let (s2, len) = calculate_length(s);
+  println!("{}, {}", s2, len);
+  fn calculate_length(s: String) -> (String, usize) {
+    let length = s.len();
+    (s, length)
+  }
 }
 
 fn sample_control_flow() {
