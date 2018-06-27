@@ -1,0 +1,8 @@
+[package]
+name = "hello"
+version = "0.1.0"
+authors = ["Whien <sal95610@gmail.com>"]
+
+[dependencies]
+
+rand = "0.5.2"
