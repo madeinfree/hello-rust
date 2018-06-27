@@ -11,3 +11,5 @@
 - example_type
 - example_len
 - example_rang
+- example_function_call
+- example_control_flow
