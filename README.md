@@ -5,3 +5,9 @@
 ## 這是什麼？
 
 第一個 Rust 練習
+
+## 練習題
+
+- example_type
+- example_len
+- example_rang
