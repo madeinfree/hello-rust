@@ -5,12 +5,89 @@ use std::cmp::Ordering;
 use std::io;
 
 fn main() {
-  sample_ownership();
+  // sample_string_slice();
+  // sample_slice_type();
+  // sample_ownership_multi_ref();
+  // sample_ownership_ref();
+
+  // sample_ownership();
   // sample_control_flow();
+
   // sample_function_call();
   // sample_type();
   // sample_len();
   // sample_rang();
+}
+
+fn sample_string_slice() {
+  let s = String::from("Hello World");
+  let commonS = "Hello Common World";
+
+  // let hello = &s[..5];
+  // let world = &s[6..];
+  // println!("{}, {}", hello, world)
+  let s2 = first_word(&s);
+  // let c2 = first_word(&commonS[..]);
+  let c2 = first_word(commonS);
+  println!("{}, c2 -> {}", s2, c2);
+
+  fn first_word(s: &str) -> &str {
+    let bytes = s.as_bytes();
+
+    for (i, &item) in bytes.iter().enumerate() {
+      if item == b' ' {
+        return &s[0..i];
+      }
+    }
+
+    &s[..]
+  }
+}
+
+fn sample_slice_type() {
+  let s = String::from("Hello");
+  let len = first_word(&s);
+  println!("{}, {}", s, len);
+  fn first_word(s: &String) -> usize {
+    let bytes = s.as_bytes();
+    for (i, &item) in bytes.iter().enumerate() {
+      println!("{}, {}", item, b' ');
+      if item == b' ' {
+        return i;
+      }
+    }
+    s.len()
+  }
+}
+
+fn sample_ownership_multi_ref() {
+  let mut s = String::from("Hello");
+
+  {
+    let r1 = &mut s;
+  }
+  let r2 = &mut s;
+}
+
+/*
+ * 利用 & 指標
+ * 使得變數不會 move 進另一個方法中
+ */
+fn sample_ownership_ref() {
+  // immutable
+  let s = String::from("Hello");
+  let len = calculate_length(&s);
+  println!("{}, {}", s, len); // s 保持
+  fn calculate_length(s: &String) -> usize {
+    s.len()
+  }
+  // mutable - &mut
+  let mut s1 = String::from("Hello");
+  change_string(&mut s1);
+  println!("{}", s1);
+  fn change_string(s: &mut String) {
+    s.push_str(", World")
+  }
 }
 
 /* 會強制 copy 等於 clone
