@@ -8,9 +8,13 @@
 
 ## 練習題
 
-- example_type
-- example_len
-- example_rang
-- example_function_call
-- example_control_flow
-- example_ownership
+- sample_type
+- sample_len
+- sample_rang
+- sample_function_call
+- sample_control_flow
+- sample_ownership
+- sample_string_slice
+- sample_slice_type
+- sample_ownership_multi_ref
+- sample_ownership_ref
