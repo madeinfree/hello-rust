@@ -18,3 +18,9 @@
 - sample_slice_type
 - sample_ownership_multi_ref
 - sample_ownership_ref
+- sample_if_let
+- sample_match
+- sample_enum
+- sample_method_syntax
+- sample_use_struct
+- sample_defining_struct

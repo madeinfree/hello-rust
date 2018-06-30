@@ -5,6 +5,13 @@ use std::cmp::Ordering;
 use std::io;
 
 fn main() {
+  // sample_if_let();
+  // sample_match();
+
+  // sample_enum();
+  // sample_method_syntax();
+  // sample_use_struct();
+  // sample_defining_struct();
   // sample_string_slice();
   // sample_slice_type();
   // sample_ownership_multi_ref();
@@ -17,6 +24,151 @@ fn main() {
   // sample_type();
   // sample_len();
   // sample_rang();
+}
+
+// if let 相等於 match 用法
+fn sample_if_let() {
+  let some_u8_value = Some(0u8);
+  // match some_u8_value {
+  //   Some(3) => println!("{}", "three"),
+  //   _ => println!("{}", "other"),
+  // }
+  if let Some(3) = some_u8_value {
+    println!("{}", "three");
+  }
+}
+/*
+ * match 像 if 一樣
+ * 不同的是, if 只能返回 boolean
+ * 而 match 可以返回一個值
+ */
+fn sample_match() {
+  #[derive(Debug)]
+  enum UsState {
+    Alabama,
+    Alaska,
+  }
+  enum Coin {
+    Penny,
+    Whien(UsState),
+  }
+
+  fn value_in_cents(coin: Coin) -> u32 {
+    match coin {
+      Coin::Penny => {
+        println!("{}", "Lucky Penny!");
+        1
+      }
+      Coin::Whien(state) => {
+        println!("State from {:?}!", state);
+        25
+      }
+    }
+  }
+
+  let c = value_in_cents(Coin::Whien(UsState::Alabama));
+  println!("{}", c);
+
+  fn plus_one(x: Option<i32>) -> Option<i32> {
+    match x {
+      None => None,
+      Some(i) => Some(i + 1),
+    }
+  }
+  let five = Some(5);
+  let six = plus_one(five);
+  let none = plus_one(None);
+
+  // _ Placeholder
+  let some_u8_value = 0u8;
+  match some_u8_value {
+    1 => println!("{}", "one"),
+    7 => println!("{}", "seven"),
+    _ => println!("{}", "None"),
+  }
+}
+
+fn sample_enum() {
+  enum IpAddrKind {
+    V4,
+  }
+
+  struct IpAddr {
+    kind: IpAddrKind,
+    address: String,
+  }
+
+  let home = IpAddr {
+    kind: IpAddrKind::V4,
+    address: String::from("127.0.0.1"),
+  };
+}
+
+fn sample_method_syntax() {
+  #[derive(Debug)] //Debug
+  struct Rectangle {
+    width: u32,
+    height: u32,
+  }
+
+  impl Rectangle {
+    fn area(&self) -> u32 {
+      self.width * self.height
+    }
+  }
+
+  let rect = Rectangle {
+    width: 30,
+    height: 50,
+  };
+
+  println!("{}", rect.area());
+}
+
+fn sample_use_struct() {
+  // adding structs
+  #[derive(Debug)] //Debug
+  struct Rectangle {
+    width: u32,
+    height: u32,
+  }
+
+  // Refactoring with Tuples
+  // let rect = (30, 50);
+  let rect = Rectangle {
+    width: 30,
+    height: 50,
+  };
+
+  // Debug
+  println!("{:?}", rect); // Rectangle { width: 30, height: 50 }
+  println!("{}", area(&rect));
+  fn area(rectangle: &Rectangle) -> u32 {
+    rectangle.width * rectangle.height
+  }
+}
+
+fn sample_defining_struct() {
+  struct User {
+    username: String,
+    active: bool,
+  }
+
+  struct Color(i32, i32, i32);
+
+  fn build_user(username: String) -> User {
+    User {
+      username: username,
+      active: true,
+    }
+  }
+
+  let user1 = build_user(String::from("Whien"));
+  let user2 = User { ..user1 };
+  println!("{}", user2.username);
+
+  let black = Color(0, 0, 0);
+  println!("{}", black.0);
 }
 
 fn sample_string_slice() {
