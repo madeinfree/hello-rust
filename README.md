@@ -24,3 +24,10 @@
 - sample_method_syntax
 - sample_use_struct
 - sample_defining_struct
+- sample_validating_lifetime
+- sample_impl_trait_type
+- sample_generic_types
+- sample_error_result
+- sample_error_panic
+- sample_hash_map
+- sample_vector

@@ -3,8 +3,17 @@ extern crate rand;
 use rand::Rng;
 use std::cmp::Ordering;
 use std::io;
+use std::io::ErrorKind;
 
 fn main() {
+  sample_validating_lifetime();
+  // sample_impl_trait_type();
+  // sample_generic_types();
+
+  // sample_error_result();
+  // sample_error_panic();
+  // sample_hash_map();
+  // sample_vector();
   // sample_if_let();
   // sample_match();
 
@@ -24,6 +33,276 @@ fn main() {
   // sample_type();
   // sample_len();
   // sample_rang();
+}
+
+fn sample_validating_lifetime() {
+  // error sample
+  // let r;
+  // {
+  //   let x = 5;
+  //   r = &x;
+  // }
+  // println!("r: {}", r);
+
+  // Lifetime Annotation Syntax (生命週期註釋語法)
+  /*
+   * &i32 - a reference
+   * &'a i32 - a reference with an explicit lifetime
+   * &'a mut i32 - a mutable reference with and explicit lifetime
+   */
+  fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
+    if x.len() > y.len() {
+      x
+    } else {
+      y
+    }
+  }
+
+  struct ImportantExcerpt<'a> {
+    part: &'a str,
+  }
+  let novel = String::from("Call. me...");
+  let first_sentence = novel.split('.').next().expect("Could not find a '.'");
+
+  let i = ImportantExcerpt {
+    part: first_sentence,
+  };
+  println!("{:?}", i.part);
+
+  // Static Lifetime
+  let s: &'static str = "I have a static lifetime";
+  println!("{}", s);
+
+  // G.T.L Together
+  use std::fmt::Display;
+  fn longest_with_an_announcement<'a, T>(x: &'a str, y: &'a str, ann: T) -> &'a str
+  where
+    T: Display,
+  {
+    println!("Announcement! {}", ann);
+    if x.len() > y.len() {
+      x
+    } else {
+      y
+    }
+  }
+  let l = longest_with_an_announcement("OK", "NOT", 1);
+  println!("{}", l);
+}
+
+// ***
+fn sample_impl_trait_type() {
+  pub trait Summary {
+    fn summarize(&self) -> String;
+  }
+  pub struct NewsArticle {
+    pub headline: String,
+  }
+  pub trait Displayer {
+    fn summarizeD(&self) -> String;
+  }
+  impl Summary for NewsArticle {
+    fn summarize(&self) -> String {
+      format!("{}", self.headline)
+    }
+  }
+  impl Displayer for NewsArticle {
+    fn summarizeD(&self) -> String {
+      format!("{}", self.headline)
+    }
+  }
+  let summary = NewsArticle {
+    headline: String::from("HELLO"),
+  };
+
+  // println!("{}", summary.summarize());
+
+  pub fn notify<T: Summary + Displayer>(item: T) {
+    println!("{}, {}", item.summarize(), item.summarizeD());
+  }
+  notify(summary);
+
+  use std::fmt::Display;
+
+  struct Pair<T> {
+    x: T,
+    y: T,
+  }
+
+  impl<T> Pair<T> {
+    fn new(x: T, y: T) -> Self {
+      Self { x, y }
+    }
+  }
+
+  impl<T: Display + PartialOrd> Pair<T> {
+    fn cmp_display(&self) {
+      if self.x >= self.y {
+        println!("The largest member is x = {}", self.x);
+      } else {
+        println!("The largest member is y = {}", self.y);
+      }
+    }
+  }
+  let pair = Pair::new(3, 5);
+  pair.cmp_display();
+}
+
+fn sample_generic_types() {
+  fn largest<T: PartialOrd + Copy>(list: &[T]) -> T {
+    let mut largest = list[0];
+
+    for &item in list.iter() {
+      if item > largest {
+        largest = item;
+      }
+    }
+
+    largest
+  }
+
+  let number_list = vec![2, 4, 6];
+  let result = largest(&number_list);
+  println!("{}", result);
+
+  struct Point<T, U> {
+    x: T,
+    y: U,
+  }
+
+  let integer = Point { x: 5, y: 10.0 };
+  println!("{}", integer.y);
+}
+
+fn sample_error_result() {
+  /**
+   *
+    enum Result<T, E> {
+        Ok(T),
+        Err(E),
+    }
+   */
+  use std::fs::File;
+  use std::io::Read;
+  let f = File::open("./src/hello.txt");
+  let f = match f {
+    Ok(file) => file,
+    Err(ref error) if error.kind() == ErrorKind::NotFound => match File::create("hello.txt") {
+      Ok(fc) => fc,
+      Err(e) => panic!("Tried to create file but there was a problem: {:?}", e),
+    },
+    Err(error) => panic!("There was a problem opening the file: {:?}", error),
+  };
+
+  // let f2 = File::open("world.txt").expect("Failed to open world.txt");
+
+  fn read_file() -> Result<String, io::Error> {
+    let f = File::open("./src/hello.txt");
+
+    let mut f = match f {
+      Ok(file) => file,
+      Err(e) => return Err(e),
+    };
+
+    let mut s = String::new();
+
+    // shortcut
+    f.read_to_string(&mut s)?;
+    Ok(s)
+    // match f.read_to_string(&mut s) {
+    //   Ok(_) => Ok(s),
+    //   Err(e) => Err(e),
+    // }
+  }
+  println!("{:?}", read_file());
+
+  // shortcut use function()?
+  fn read_file2() -> Result<String, io::Error> {
+    let mut s2 = String::new();
+
+    File::open("./src/hello.txt")?.read_to_string(&mut s2);
+    Ok(s2)
+  }
+
+  println!("{:?}", read_file2());
+
+  // Guess - 09-03 last sample
+  pub struct Guess {
+    value: u32,
+  }
+
+  impl Guess {
+    pub fn new(value: u32) -> Guess {
+      if value < 1 || value > 100 {
+        panic!("Guess value must be between 1 and 100, got {}.", value);
+      }
+      // 定義 Guess 物件
+      Guess { value }
+    }
+    pub fn value(&self) -> u32 {
+      self.value
+    }
+  }
+
+  println!("{}", Guess::new(120).value);
+}
+
+fn sample_error_panic() {
+  let v = vec![1, 2, 3];
+  v[99];
+  panic!("crash and burn");
+  println!("{}", "Run here?"); // Not run
+}
+
+fn sample_hash_map() {
+  use std::collections::HashMap;
+  let mut scores = HashMap::new();
+  scores.insert(String::from("Blue"), 10);
+
+  // let teams = vec![String::from("Blue")];
+  // let init_scores = vec![10];
+
+  // let scores: HashMap<_, _> = teams.iter().zip(init_scores.iter()).collect();
+
+  // 檢查是否存在, 否則帶入 50
+  scores.entry(String::from("Yellow")).or_insert(50);
+  scores.entry(String::from("Blue")).or_insert(50);
+
+  println!("{:?}", scores);
+
+  let text = "hello world wonderful world";
+  let mut map = HashMap::new();
+
+  // dereference count using the asterisk (*)
+  for word in text.split_whitespace() {
+    let count = map.entry(word).or_insert(0);
+    *count += 1;
+  }
+
+  println!("{:?}", map);
+}
+
+fn sample_vector() {
+  // let v: Vec<i32> = Vec::new();
+  // let v = vec![1, 2, 3];
+  // for i in &v {
+  //   println!("{}", i);
+  // }
+
+  // let mut update_v = Vec::new();
+  // update_v.push(5);
+
+  enum SpreadsheetCell {
+    Int(i32),
+    Float(f64),
+    Text(String),
+  }
+
+  let row = vec![
+    SpreadsheetCell::Int(1),
+    SpreadsheetCell::Float(1.11),
+    SpreadsheetCell::Text(String::from("Hello World")),
+  ];
 }
 
 // if let 相等於 match 用法
